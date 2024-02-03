@@ -1,0 +1,25 @@
+{
+  "name": "azalea-bot-discord",
+  "version": "1.0.0",
+  "description": "A discord chat bot",
+  "author": {
+    "name": "Kevin Choong",
+    "email": "choong.kvn@gmail.com"
+  },
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npm/cli.git"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.4"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1"
+  }
+}
