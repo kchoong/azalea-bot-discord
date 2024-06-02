@@ -22,6 +22,6 @@ module.exports = {
     const mode = interaction.options.getInteger('mode');
     queue.setRepeatMode(mode);
 
-    interaction.reply('Repeat mode has been set to ' + mode + '.');
+    await interaction.reply('Repeat mode has been set to ' + mode + '.');
   },
 };

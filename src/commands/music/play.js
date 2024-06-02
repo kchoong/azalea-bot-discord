@@ -28,22 +28,25 @@ module.exports = {
 
       const queue = useQueue(interaction.guild.id);
       if (queue.tracks === null || queue.tracks.size === 0) {
-        await interaction.followUp(`\u25B6 Now playing: ${track.title}`);
-        await interaction.deleteReply();
-      } else {
-        const embed = new EmbedBuilder()
-          .setColor(`#${process.env.ACCENT_COLOR}`)
-          .setTitle(track.title)
-          .setURL(track.url)
-          .setThumbnail(track.thumbnail)
-          .setDescription('has been added to the queue.')
-          .addFields(
-            {name: 'Artist', value: track.author, inline: true},
-            {name: 'Duration', value: track.duration, inline: true}
-          );
-
-        return interaction.followUp({embeds: [embed]});
+        await interaction.followUp({
+          content: `\u25B6 Now playing: ${track.title}`,
+          ephemeral: true,
+        });
+        return interaction.deleteReply();
       }
+
+      const embed = new EmbedBuilder()
+        .setColor(`#${process.env.ACCENT_COLOR}`)
+        .setTitle(track.title)
+        .setURL(track.url)
+        .setThumbnail(track.thumbnail)
+        .setDescription('has been added to the queue.')
+        .addFields(
+          {name: 'Artist', value: track.author, inline: true},
+          {name: 'Duration', value: track.duration, inline: true}
+        );
+
+      await interaction.followUp({embeds: [embed]});
     } catch (e) {
       console.error(`Error adding the URL or query: ${query}`);
       console.error(`Error: ${e}`);

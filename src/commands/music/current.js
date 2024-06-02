@@ -19,6 +19,6 @@ module.exports = {
         {name: 'Duration', value: currentTrack.duration, inline: true}
       );
 
-    interaction.reply({embeds: [embed]});
+    await interaction.reply({embeds: [embed]});
   },
 };

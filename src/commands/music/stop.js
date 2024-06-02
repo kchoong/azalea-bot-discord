@@ -11,7 +11,7 @@ module.exports = {
 
     interaction.client.user.setActivity('🌸', {type: ActivityType.Custom});
 
-    await interaction.reply('Stopped the music!');
+    await interaction.reply({content: 'Stopped the music!', ephemeral: true});
     await interaction.deleteReply();
   },
 };

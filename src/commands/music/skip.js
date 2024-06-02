@@ -8,7 +8,7 @@ module.exports = {
     const skippedTrack = queue.currentTrack; //Gets the current track being played
     queue.node.skip();
 
-    await interaction.reply('Skipped the current song!');
+    await interaction.reply({content: 'Skipped the current song!', ephemeral: true});
     await interaction.deleteReply();
   },
 };

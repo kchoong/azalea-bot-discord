@@ -9,7 +9,7 @@ module.exports = {
     const queue = useQueue(interaction.guild.id);
     queue.tracks.shuffle();
 
-    await interaction.reply('Shuffled the queue!');
+    await interaction.reply({content: 'Shuffled the queue!', ephemeral: true});
     await interaction.deleteReply();
   },
 };
