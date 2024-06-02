@@ -29,9 +29,11 @@ player.extractors
 
       queue.metadata.channel.send({embeds: [embed]});
     });
-    player.events.on('emptyQueue', (queue) => {
-      client.user.setActivity('🌸', {type: ActivityType.Custom});
-    });
+    ['emptyQueue', 'emptyChannel', 'disconnect'].forEach((event) =>
+      player.events.on(event, (queue) => {
+        client.user.setActivity('🌸', {type: ActivityType.Custom});
+      })
+    );
   });
 
 // Load bot commands

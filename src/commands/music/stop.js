@@ -1,4 +1,4 @@
-const {SlashCommandBuilder} = require('discord.js');
+const {SlashCommandBuilder, ActivityType} = require('discord.js');
 const {useQueue} = require('discord-player');
 
 module.exports = {
@@ -8,6 +8,8 @@ module.exports = {
   async execute(interaction) {
     const queue = useQueue(interaction.guild.id);
     queue.delete();
+
+    interaction.client.user.setActivity('🌸', {type: ActivityType.Custom});
 
     await interaction.reply('Stopped the music!');
     await interaction.deleteReply();
