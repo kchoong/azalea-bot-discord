@@ -1,12 +1,33 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const {Client, Collection, GatewayIntentBits} = require('discord.js');
+const {
+  ActivityType,
+  Client,
+  Collection,
+  GatewayIntentBits,
+  PresenceUpdateStatus,
+} = require('discord.js');
+const {Player} = require('discord-player');
 
 const dotenv = require('dotenv');
 dotenv.config();
 
 // Create a new client instance
-const client = new Client({intents: [GatewayIntentBits.Guilds]});
+const client = new Client({intents: [GatewayIntentBits.Guilds, 'GuildVoiceStates']});
+
+// this is the entrypoint for discord-player based application
+const player = new Player(client);
+player.extractors
+  .loadDefault((ext) => ['YouTubeExtractor', 'SpotifyExtractor', 'LyricsExtractor'].includes(ext))
+  .then((r) => {
+    // Add discord-player events (see the documentation for more events)
+    player.events.on('playerStart', (queue, track) => {
+      client.user.setActivity(`🎧 ${track.title}`, {type: ActivityType.Custom});
+    });
+    player.events.on('emptyQueue', (queue) => {
+      client.user.setActivity('🌸', {type: ActivityType.Custom});
+    });
+  });
 
 // Load bot commands
 client.commands = new Collection();
