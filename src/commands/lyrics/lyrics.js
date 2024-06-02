@@ -7,6 +7,9 @@ const {
 } = require('discord.js');
 const {useQueue} = require('discord-player');
 const {lyricsExtractor} = require('@discord-player/extractor');
+const {OpenAI} = require('openai');
+const path = require('path');
+const fs = require('node:fs/promises');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -69,8 +72,8 @@ module.exports = {
         new StringSelectMenuOptionBuilder()
           .setLabel('English')
           .setEmoji({name: '🇺🇸'})
-          .setValue('en'),
-        new StringSelectMenuOptionBuilder().setLabel('German').setEmoji({name: '🇩🇪'}).setValue('de')
+          .setValue('en')
+        // new StringSelectMenuOptionBuilder().setLabel('German').setEmoji({name: '🇩🇪'}).setValue('de')
       );
     const actionRow = new ActionRowBuilder().addComponents(translationSelect);
 
@@ -100,12 +103,12 @@ module.exports = {
             components: [],
           });
           break;
-        case 'de':
-          await selection.update({
-            content: 'Translating to German...',
-            components: [],
-          });
-          break;
+        // case 'de':
+        //   await selection.update({
+        //     content: 'Translating to German...',
+        //     components: [],
+        //   });
+        //   break;
       }
     } catch (e) {
       await interaction.followUp({
@@ -118,20 +121,44 @@ module.exports = {
     // Translate lyrics with OpenAI GPT-4o
     const language = selection ? selection.values[0] : 'none';
     if (selection && language !== 'none') {
-      const translation = 'asdf';
-      const trimmedTranslation = translation.substring(0, maxLyricsSize);
+      try {
+        var contextPath = path.join(__dirname, '..', '..', 'openai', 'translation_en.md');
+        const context = await fs.readFile(contextPath, {encoding: 'utf8'});
+        const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4o',
+          temperature: 0.3,
+          max_tokens: 800,
+          messages: [
+            {role: 'system', content: context},
+            {
+              role: 'user',
+              content: lyrics.lyrics,
+            },
+          ],
+        });
 
-      const translationEmbed = new EmbedBuilder()
-        .setColor(`#${process.env.ACCENT_COLOR}`)
-        .setTitle(`${lyrics.title} (Translation)`)
-        .setAuthor({
-          name: lyrics.artist.name,
-          iconURL: lyrics.artist.image,
-        })
-        .setDescription(
-          translation.length > maxLyricsSize ? `${trimmedTranslation}...` : trimmedTranslation
+        console.info(
+          `OpenAI token usage: ${completion.usage.prompt_tokens} + ${completion.usage.completion_tokens} = ${completion.usage.total_tokens}`
         );
-      await interaction.followUp({embeds: [translationEmbed]});
+
+        const translation = completion.choices[0].message.content;
+        const trimmedTranslation = translation.substring(0, maxLyricsSize);
+
+        const translationEmbed = new EmbedBuilder()
+          .setColor(`#${process.env.ACCENT_COLOR}`)
+          .setTitle(`${lyrics.title} (Translation)`)
+          .setAuthor({
+            name: lyrics.artist.name,
+            iconURL: lyrics.artist.image,
+          })
+          .setDescription(
+            translation.length > maxLyricsSize ? `${trimmedTranslation}...` : trimmedTranslation
+          );
+        await interaction.followUp({embeds: [translationEmbed]});
+      } catch (err) {
+        console.log(err);
+      }
     }
   },
 };
