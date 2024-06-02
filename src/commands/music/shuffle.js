@@ -10,5 +10,6 @@ module.exports = {
     queue.tracks.shuffle();
 
     await interaction.reply('Shuffled the queue!');
+    await interaction.deleteReply();
   },
 };

@@ -1,4 +1,4 @@
-const {SlashCommandBuilder} = require('discord.js');
+const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const {useQueue} = require('discord-player');
 
 module.exports = {
@@ -7,9 +7,18 @@ module.exports = {
     .setDescription('Show the currently played track.'),
   async execute(interaction) {
     const queue = useQueue(interaction.guild.id);
-    const tracks = queue.tracks.toArray(); // Tracks in the queue, excluding the current track
     const currentTrack = queue.currentTrack;
 
-    await interaction.reply(tracks);
+    const embed = new EmbedBuilder()
+      .setColor(`#${process.env.ACCENT_COLOR}`)
+      .setTitle(currentTrack.title)
+      .setURL(currentTrack.url)
+      .setThumbnail(currentTrack.thumbnail)
+      .addFields(
+        {name: 'Artist', value: currentTrack.author, inline: true},
+        {name: 'Duration', value: currentTrack.duration, inline: true}
+      );
+
+    interaction.reply({embeds: [embed]});
   },
 };

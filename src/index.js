@@ -1,12 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const {
-  ActivityType,
-  Client,
-  Collection,
-  GatewayIntentBits,
-  PresenceUpdateStatus,
-} = require('discord.js');
+const {ActivityType, Client, Collection, GatewayIntentBits, EmbedBuilder} = require('discord.js');
 const {Player} = require('discord-player');
 
 const dotenv = require('dotenv');
@@ -22,7 +16,18 @@ player.extractors
   .then((r) => {
     // Add discord-player events (see the documentation for more events)
     player.events.on('playerStart', (queue, track) => {
-      client.user.setActivity(`🎧 ${track.title}`, {type: ActivityType.Custom});
+      client.user.setActivity(`🎧 ${track.title} - ${track.author}`, {type: ActivityType.Custom});
+      const embed = new EmbedBuilder()
+        .setColor(`#${process.env.ACCENT_COLOR}`)
+        .setTitle('\u25B6 Now Playing')
+        .setThumbnail(track.thumbnail)
+        .setDescription(`[${track.title}](${track.url})`)
+        .addFields(
+          {name: 'Artist', value: track.author, inline: true},
+          {name: 'Duration', value: track.duration, inline: true}
+        );
+
+      queue.metadata.channel.send({embeds: [embed]});
     });
     player.events.on('emptyQueue', (queue) => {
       client.user.setActivity('🌸', {type: ActivityType.Custom});

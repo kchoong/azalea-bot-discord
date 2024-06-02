@@ -1,5 +1,5 @@
-const {SlashCommandBuilder} = require('discord.js');
-const {useMainPlayer} = require('discord-player');
+const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
+const {useMainPlayer, useQueue} = require('discord-player');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,30 +8,46 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName('query')
-        .setDescription('The URL or search query for the YouTube video or Spotify song.')
+        .setDescription('The URL or search query for the YouTube video/playlist or Spotify song.')
         .setRequired(true)
     ),
   async execute(interaction) {
     const player = useMainPlayer();
     const channel = interaction.member.voice.channel;
-    if (!channel) return interaction.reply('You are not connected to a voice channel!'); // make sure we have a voice channel
-    const query = interaction.options.getString('query', true); // we need input/query to play
+    if (!channel) return interaction.reply('Please join a voice channel first!');
+    const query = interaction.options.getString('query', true);
 
-    // let's defer the interaction as things can take time to process
     await interaction.deferReply();
 
     try {
       const {track} = await player.play(channel, query, {
         nodeOptions: {
-          // nodeOptions are the options for guild node (aka your queue in simple word)
-          metadata: interaction, // we can access this metadata object using queue.metadata later on
+          metadata: interaction,
         },
       });
 
-      return interaction.followUp(`**${track.title}** enqueued!`);
+      const queue = useQueue(interaction.guild.id);
+      if (queue.tracks === null || queue.tracks.size === 0) {
+        await interaction.followUp(`\u25B6 Now playing: ${track.title}`);
+        await interaction.deleteReply();
+      } else {
+        const embed = new EmbedBuilder()
+          .setColor(`#${process.env.ACCENT_COLOR}`)
+          .setTitle(track.title)
+          .setURL(track.url)
+          .setThumbnail(track.thumbnail)
+          .setDescription('has been added to the queue.')
+          .addFields(
+            {name: 'Artist', value: track.author, inline: true},
+            {name: 'Duration', value: track.duration, inline: true}
+          );
+
+        return interaction.followUp({embeds: [embed]});
+      }
     } catch (e) {
-      // let's return error if something failed
-      return interaction.followUp(`Something went wrong: ${e}`);
+      console.error(`Error adding the URL or query: ${query}`);
+      console.error(`Error: ${e}`);
+      return interaction.followUp(`Something went wrong, please try another URL or query.`);
     }
   },
 };

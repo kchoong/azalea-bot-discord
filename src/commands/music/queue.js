@@ -1,4 +1,4 @@
-const {SlashCommandBuilder} = require('discord.js');
+const {SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const {useQueue} = require('discord-player');
 
 module.exports = {
@@ -7,12 +7,21 @@ module.exports = {
     .setDescription('Show the current list of tracks in the queue.'),
   async execute(interaction) {
     const queue = useQueue(interaction.guild.id);
-    const tracks = queue.tracks.toArray(); //Converts the queue into a array of tracks
-    const currentTrack = queue.currentTrack; //Gets the current track being played
+    const tracks = queue.tracks.toArray(); // Tracks in the queue, excluding the current track
+    if (!tracks.length)
+      return interaction.reply('The current queue is empty! Try adding some tracks with `/play`.');
 
-    console.log(tracks);
-    console.log(currentTrack);
+    const firstTen = tracks.length > 10 ? tracks.slice(0, 10) : tracks;
+    const description = firstTen
+      .map((track, index) => `${index + 1}. [${track.title}](${track.url})`)
+      .join('\n');
 
-    await interaction.reply(tracks);
+    const embed = new EmbedBuilder()
+      .setColor(`#${process.env.ACCENT_COLOR}`)
+      .setTitle('Current Queue')
+      .setDescription(description)
+      .addFields({name: 'Total', value: `${tracks.length}`, inline: true});
+
+    await interaction.reply({embeds: [embed]});
   },
 };

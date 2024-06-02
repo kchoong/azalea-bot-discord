@@ -8,6 +8,8 @@ module.exports = {
   async execute(interaction) {
     const queue = useQueue(interaction.guild.id);
     queue.delete();
-    interaction.reply('Stopped the music!');
+
+    await interaction.reply('Stopped the music!');
+    await interaction.deleteReply();
   },
 };

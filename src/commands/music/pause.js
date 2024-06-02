@@ -6,6 +6,8 @@ module.exports = {
   async execute(interaction) {
     const queue = useQueue(interaction.guild.id);
     queue.node.setPaused(!queue.node.isPaused()); // isPaused() returns true if that player is already paused
+
     await interaction.reply('Paused the music!');
+    await interaction.deleteReply();
   },
 };

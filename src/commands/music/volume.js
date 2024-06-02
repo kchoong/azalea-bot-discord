@@ -18,6 +18,6 @@ module.exports = {
     const volume = interaction.options.getInteger('level');
     queue.node.setVolume(volume);
 
-    await interaction.reply('Volume has been set to ' + volume + '.');
+    await interaction.reply('Volume has been set to ' + volume + '%.');
   },
 };
