@@ -8,7 +8,7 @@ module.exports = {
     .addIntegerOption((option) =>
       option
         .setName('level')
-        .setDescription('The volume level you want to set.')
+        .setDescription('The volume level for the music.')
         .setMinValue(0)
         .setMaxValue(100)
         .setRequired(true)

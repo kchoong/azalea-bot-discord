@@ -2,14 +2,13 @@ const {SlashCommandBuilder} = require('discord.js');
 const {useQueue} = require('discord-player');
 
 module.exports = {
-  data: new SlashCommandBuilder().setName('current').setDescription('Show the current queue.'),
+  data: new SlashCommandBuilder()
+    .setName('current')
+    .setDescription('Show the currently played track.'),
   async execute(interaction) {
     const queue = useQueue(interaction.guild.id);
-    const tracks = queue.tracks.toArray(); //Converts the queue into a array of tracks
-    const currentTrack = queue.currentTrack; //Gets the current track being played
-
-    console.log(tracks);
-    console.log(currentTrack);
+    const tracks = queue.tracks.toArray(); // Tracks in the queue, excluding the current track
+    const currentTrack = queue.currentTrack;
 
     await interaction.reply(tracks);
   },
