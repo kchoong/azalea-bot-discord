@@ -112,7 +112,7 @@ module.exports = {
       }
     } catch (e) {
       await interaction.followUp({
-        content: 'Confirmation not received within 1 minute, cancelling',
+        content: 'Confirmation not received within 1 minute, cancelling.',
         components: [],
         ephemeral: true,
       });

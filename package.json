@@ -28,6 +28,8 @@
     "genius-lyrics": "^4.4.7",
     "mediaplex": "^0.0.9",
     "openai": "^4.47.2",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7",
     "ytdl-core": "^4.11.5"
   }
 }

@@ -2,14 +2,30 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {ActivityType, Client, Collection, GatewayIntentBits, EmbedBuilder} = require('discord.js');
 const {Player} = require('discord-player');
-
+const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
 dotenv.config();
 
 // Create a new client instance
-const client = new Client({intents: [GatewayIntentBits.Guilds, 'GuildVoiceStates']});
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildVoiceStates,
+  ],
+});
 
-// this is the entrypoint for discord-player based application
+// Initialize Sequelize
+const sequelize = new Sequelize('database', 'username', 'password', {
+  host: 'localhost',
+  dialect: 'sqlite',
+  logging: false,
+  storage: 'database.sqlite',
+});
+const Funds = require('./models/Funds.js')(sequelize, Sequelize.DataTypes);
+
+// Initialize discord-player
 const player = new Player(client);
 player.extractors
   .loadDefault((ext) => ['YouTubeExtractor', 'SpotifyExtractor', 'LyricsExtractor'].includes(ext))
